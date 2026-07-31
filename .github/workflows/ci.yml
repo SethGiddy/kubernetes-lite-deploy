@@ -50,7 +50,7 @@ jobs:
           context: ./app
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ toLower(github.repository) }}:${{ github.sha }}
 
       - name: Build and push Docker image (latest on main)
         if: github.ref == 'refs/heads/main'
@@ -59,4 +59,4 @@ jobs:
           context: ./app
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
+            ghcr.io/${{ toLower(github.repository) }}:latest
