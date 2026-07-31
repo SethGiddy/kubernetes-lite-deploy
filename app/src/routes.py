@@ -6,14 +6,8 @@ from prometheus_client import CONTENT_TYPE_LATEST
 from prometheus_client import generate_latest
 
 from .config import Config
-from .metrics import REQUEST_COUNTER
 
 bp = Blueprint("api", __name__)
-
-
-@bp.before_request
-def count_requests():
-    REQUEST_COUNTER.inc()
 
 
 @bp.route("/")
