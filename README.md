@@ -102,6 +102,42 @@ docker compose up --build
 
 See `monitoring/README.md` for dashboard setup and local URLs.
 
+Application Monitoring Dashboard
+--------------------------------
+
+The following dashboard view summarizes the expected local Kubernetes and application status:
+
+```text
+┌──────────────────────────────────────────────────────────────┐
+│              KUBERNETES LITE DEPLOY                         │
+│             Application Monitoring Dashboard                │
+├───────────────────────┬──────────────────────────────────────┤
+│ CLUSTER STATUS         │ APPLICATION                          │
+│                       │                                      │
+│ 🟢 Cluster: HEALTHY   │ 🟢 API: HEALTHY                      │
+│ 🟢 Nodes: 3/3         │ 🟢 Pods: 5/5                         │
+│ 🟢 Deployment: READY  │ 🟢 Service: AVAILABLE                │
+├───────────────────────┴──────────────────────────────────────┤
+│                  POD CPU UTILISATION                         │
+│                                                              │
+│  80% ┤                                      ●                │
+│  60% ┤                         ●──────●─────┘                │
+│  40% ┤              ●────●─────┘                            │
+│  20% ┤ ●────●───────┘                                       │
+│   0% └──────────────────────────────────────────────         │
+│                                                              │
+├───────────────────────────────┬──────────────────────────────┤
+│ HPA                           │ RESOURCE STATUS              │
+│                               │                              │
+│ Target CPU:       60%         │ CPU:       9% / 60%          │
+│ Minimum Pods:     2           │ Memory:    ~110Mi            │
+│ Maximum Pods:     10          │                              │
+│ Current Pods:     5           │ Nodes:     3                 │
+│                               │                              │
+│      ↕ AUTO SCALING           │      🟢 HEALTHY              │
+└───────────────────────────────┴──────────────────────────────┘
+```
+
 CI/CD
 -----
 
