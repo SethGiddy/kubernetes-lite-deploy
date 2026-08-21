@@ -17,6 +17,7 @@ spec:
       containers:
         - name: app
           image: kubernetes-lite-deploy:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 5000
           readinessProbe:
