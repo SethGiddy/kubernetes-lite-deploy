@@ -1,383 +1,290 @@
-Kubernetes Lite Deploy
-======================
+# Kubernetes-Lite Deploy
 
-This repository contains a small Flask-based microservice and the surrounding files needed to run it in a container and on Kubernetes.
+A lightweight web-based deployment management platform for developers and small teams to build, package, deploy, and monitor containerised applications without needing to manage the full complexity of Kubernetes.
 
-The service exposes a few simple endpoints and includes Prometheus-compatible metrics collection.
+## 🚀 What is Kubernetes-Lite Deploy?
 
-Project contents
-----------------
+Kubernetes-Lite Deploy is a web application designed to simplify common container deployment workflows.
 
-- `app/` - the Python app, including source, tests, requirements, and a `Dockerfile`.
-- `app/src/` - app code, including the Flask app factory, routes, config, logging, and middleware.
-- `app/tests/` - a minimal test suite for the health and version endpoints.
-- `k8s/` - basic Kubernetes manifests for Deployment and Service.
-- `.github/workflows/ci.yml` - GitHub Actions workflow that installs dependencies, runs tests, and builds/pushes the Docker image to GHCR.
-- `.github/dependabot.yml` - dependency update configuration for Python, GitHub Actions, and Docker.
-- `README.md` - this file.
-- `terraform/` - reserved for infrastructure code if added later.
-- `monitoring/` - local Prometheus and Grafana files for observability.
+The idea is simple:
 
-What the app does
------------------
+> **Build your application → package it as a container → deploy it → monitor its status from one place.**
 
-The Flask app provides:
+In a real-world environment, a tool like this could help small development teams standardise application deployments without requiring every developer to become a Kubernetes expert.
 
-- `/` - a simple application info response.
-- `/health` - health check response.
-- `/ready` - readiness probe response.
-- `/version` - version response.
-- `/metrics` - Prometheus metrics output.
+The project is currently being developed as a practical DevOps engineering project, with the long-term goal of evolving it into a useful deployment and operations platform.
 
-The app factory also configures JSON logging and request metrics middleware.
+---
 
-Local development
------------------
+## 💡 Real-World Use Cases
+
+Kubernetes-Lite Deploy could eventually be used by:
+
+- **Small development teams** that need a simple deployment platform.
+- **Startups** that want to deploy containerised applications without managing a large Kubernetes environment.
+- **Development teams** that need repeatable application deployment workflows.
+- **Training organisations** that want a practical environment for teaching containerisation and DevOps.
+- **Internal engineering teams** that want a lightweight interface around their existing container infrastructure.
+
+Potential future capabilities include:
+
+- Application deployment
+- Container image management
+- Deployment status
+- Application health monitoring
+- Deployment history
+- Environment management
+- Rollback support
+- Logs and troubleshooting
+- CI/CD integration
+- Role-based access control
+
+---
+
+## 🏗️ Current Architecture
+
+The application currently uses a containerised Python web application and is being developed around modern DevOps practices.
+
+```text
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+GitHub Actions
+    │
+    ├── Automated Tests
+    ├── Docker Build
+    └── Container Image
+          │
+          ▼
+     Azure Container Registry
+          │
+          ▼
+   Azure Container Apps
+          │
+          ▼
+   Kubernetes-Lite Deploy
+```
+
+---
+
+## 🛠️ Technology Stack
+
+### Application
+
+- Python
+- Flask
+- Gunicorn
+- Pytest
+
+### Containerisation
+
+- Docker
+- Docker Buildx
+- Docker Compose
+
+### Cloud & Deployment
+
+- Microsoft Azure
+- Azure Container Registry
+- Azure Container Apps
+- Azure CLI
+
+### CI/CD
+
+- GitHub Actions
+- Automated testing
+- Automated Docker image builds
+- GitHub Actions OIDC authentication with Azure
+
+### Development
+
+- Git
+- GitHub
+- VS Code
+- Linux / WSL
+- Windows
+
+---
+
+## 🔄 Current CI/CD Workflow
+
+The project currently follows this workflow:
+
+```text
+Git Push
+   │
+   ▼
+GitHub Actions
+   │
+   ├── Checkout source
+   ├── Setup Python
+   ├── Install dependencies
+   ├── Run tests
+   ├── Build Docker image
+   └── Authenticate with Azure using OIDC
+          │
+          ▼
+      Azure
+```
+
+The GitHub Actions pipeline uses **OIDC authentication** rather than storing a long-lived Azure client secret in GitHub.
+
+This provides a more secure authentication model for CI/CD.
+
+---
+
+## 🔐 Security Approach
+
+Security is treated as a core part of the project rather than something added at the end.
+
+Current practices include:
+
+- GitHub Actions OIDC authentication
+- No Azure credentials stored directly in the repository
+- Azure identity-based authentication
+- Containerised application deployment
+- Azure Container Registry for container images
+- Repository secrets and variables for environment-specific configuration
+- Least-privilege permissions where practical
+
+Sensitive information such as subscription IDs, tenant IDs, service-principal object IDs, credentials, tokens and secrets should **never be committed to this repository**.
+
+---
+
+## 📦 Container Image
+
+The application is packaged as a Docker image and stored in Azure Container Registry.
+
+Example image:
+
+```text
+kubeliteacr1933.azurecr.io/kubernetes-lite-deploy
+```
+
+The image can then be consumed by the deployment environment.
+
+---
+
+## ☁️ Azure Deployment
+
+The application is currently deployed using **Azure Container Apps**.
+
+Azure Container Apps provides a managed container runtime while avoiding the operational overhead of maintaining a Kubernetes cluster for this stage of the project.
+
+The application is configured to expose the web service through Azure Container Apps ingress.
+
+---
+
+## 🧪 Testing
+
+Tests are executed automatically through GitHub Actions.
+
+The current pipeline runs:
 
 ```bash
-cd app
-python -m venv .venv
-source .venv/bin/activate
 pip install -r requirements.txt
 pytest -q
 ```
 
-Run locally:
-
-```bash
-cd app
-python -m src.app
-```
-
-The app listens on `0.0.0.0:5000` by default.
+A deployment should only progress after the application passes its automated tests.
 
-Docker
-------
+---
 
-Build the image from `app/`:
-
-```bash
-cd app
-docker build -t kubernetes-lite-deploy:latest .
-```
+## 🎯 Project Goals
 
-Run it locally:
+The project is being developed incrementally with the following goals:
 
-```bash
-docker run -p 5000:5000 kubernetes-lite-deploy:latest
-```
+1. Build a working web application.
+2. Containerise the application.
+3. Automate testing.
+4. Automate image creation.
+5. Implement secure cloud authentication.
+6. Deploy the application to Azure.
+7. Introduce automated deployments.
+8. Add deployment and application monitoring.
+9. Improve reliability and security.
+10. Evolve the project toward a practical deployment management platform.
 
-Kubernetes
-----------
+---
 
-A basic Deployment and Service are provided in `k8s/`.
+## 🗺️ Roadmap
 
-The Deployment is configured with:
+### Phase 1 — Application
 
-- 2 replicas
-- liveness probe on `/health`
-- readiness probe on `/ready`
+- [x] Python web application
+- [x] Application testing
+- [x] Docker containerisation
 
-The Service exposes the app on port `80` and forwards traffic to container port `5000`.
+### Phase 2 — Cloud
 
-For a local Kubernetes cluster, build the image and apply the manifests:
+- [x] Azure Container Registry
+- [x] Azure Container Apps
+- [x] Application ingress
+- [x] Container deployment
 
-```bash
-docker build -t kubernetes-lite-deploy:latest ./app
-kubectl apply -f k8s/
-kubectl port-forward service/kubernetes-lite-deploy 5000:80
-```
-
-Then open http://localhost:5000. The Deployment uses `IfNotPresent` so a locally built image can be used without a registry.
-
-Local monitoring
-----------------
-
-Prometheus and Grafana can run locally at no hosting cost:
-
-```bash
-cd monitoring
-docker compose up --build
-```
-
-See `monitoring/README.md` for dashboard setup and local URLs.
-
-Application Monitoring Dashboard
---------------------------------
-
-The following dashboard view summarizes the expected local Kubernetes and application status:
-
-```text
-┌──────────────────────────────────────────────────────────────┐
-│              KUBERNETES LITE DEPLOY                         │
-│             Application Monitoring Dashboard                │
-├───────────────────────┬──────────────────────────────────────┤
-│ CLUSTER STATUS         │ APPLICATION                          │
-│                       │                                      │
-│ 🟢 Cluster: HEALTHY   │ 🟢 API: HEALTHY                      │
-│ 🟢 Nodes: 3/3         │ 🟢 Pods: 5/5                         │
-│ 🟢 Deployment: READY  │ 🟢 Service: AVAILABLE                │
-├───────────────────────┴──────────────────────────────────────┤
-│                  POD CPU UTILISATION                         │
-│                                                              │
-│  80% ┤                                      ●                │
-│  60% ┤                         ●──────●─────┘                │
-│  40% ┤              ●────●─────┘                            │
-│  20% ┤ ●────●───────┘                                       │
-│   0% └──────────────────────────────────────────────         │
-│                                                              │
-├───────────────────────────────┬──────────────────────────────┤
-│ HPA                           │ RESOURCE STATUS              │
-│                               │                              │
-│ Target CPU:       60%         │ CPU:       9% / 60%          │
-│ Minimum Pods:     2           │ Memory:    ~110Mi            │
-│ Maximum Pods:     10          │                              │
-│ Current Pods:     5           │ Nodes:     3                 │
-│                               │                              │
-│      ↕ AUTO SCALING           │      🟢 HEALTHY              │
-└───────────────────────────────┴──────────────────────────────┘
-```
-
-CI/CD
------
-
-The GitHub Actions workflow in `.github/workflows/ci.yml`:
-
-- sets up Python and installs dependencies
-- runs tests
-- builds a Docker image
-- pushes image tags to GitHub Container Registry (GHCR)
-
-If you want to change the image destination or registry, update the workflow accordingly.
-
-Notes
------
-
-- `terraform/` is reserved for future infrastructure definitions.
-- `monitoring/` contains a local-only Prometheus and Grafana setup.
-- `docs/` and `diagrams/` contain optional supporting doc assets.
-
-That is the current shape of this project.
-
-Project Demonstration
----------------------
-
-The application is deployed to a local Kubernetes cluster running on Docker Desktop.
-
-Example response from the root endpoint:
-
-```json
-{
-	"application": "devops-health-api",
-	"message": "Welcome to Kubernetes Lite Deploy",
-	"version": "1.0.0"
-}
-```
-
-Architecture
-------------
-
-```text
-Docker Image
-		 |
-		 v
-Kubernetes Deployment
-		 |
-		 +--> Pod
-		 +--> Pod
-		 +--> Pod ...
-		 |
-		 v
-ClusterIP Service (port 80)
-		 |
-		 v
-Flask API (port 5000)
-		 |
-		 v
-Metrics Server
-		 |
-		 v
-Horizontal Pod Autoscaler
-CPU target: 60% | Minimum: 2 pods | Maximum: 10 pods
-```
-
-Technologies
-------------
-
-- Python and Flask
-- Gunicorn
-- Docker
-- Kubernetes
-- Docker Desktop Kubernetes
-- kubectl
-- Metrics Server
-- Horizontal Pod Autoscaler
-- Git and GitHub
+### Phase 3 — CI/CD
 
-Kubernetes Components
----------------------
-
-### Deployment
+- [x] GitHub Actions
+- [x] Automated testing
+- [x] Docker image build
+- [x] Azure OIDC authentication
+- [x] GitHub Actions Azure authentication
+- [ ] Automated deployment to Azure
+- [ ] Deployment verification
 
-The Kubernetes Deployment manages application replicas and provides self-healing:
+### Phase 4 — Platform Features
 
-```bash
-kubectl get deployment kubernetes-lite-deploy
-```
+- [ ] Deployment dashboard
+- [ ] Deployment history
+- [ ] Application health status
+- [ ] Container logs
+- [ ] Environment management
+- [ ] Rollback capability
+- [ ] Monitoring and alerts
 
-### Service
+### Phase 5 — Production Readiness
 
-A ClusterIP Service provides stable internal networking:
+- [ ] Improved application security
+- [ ] Infrastructure as Code
+- [ ] Observability
+- [ ] Error handling
+- [ ] Performance testing
+- [ ] Production deployment strategy
 
-```text
-Service port: 80
-Target port: 5000
-```
+---
 
-Test the application from inside the cluster:
+## 📚 Project Purpose
 
-```bash
-kubectl run curl-test \
-	--rm -it \
-	--image=curlimages/curl \
-	--restart=Never \
-	-- curl -s http://kubernetes-lite-deploy
-```
+Kubernetes-Lite Deploy is being developed as a practical DevOps project to demonstrate how a software application can move from source code to a secure, automated cloud deployment.
 
-Expected response:
+The project focuses on **real engineering practices**, including:
 
-```json
-{
-	"application": "devops-health-api",
-	"message": "Welcome to Kubernetes Lite Deploy",
-	"version": "1.0.0"
-}
-```
+- Software development
+- Testing
+- Git workflows
+- Containerisation
+- CI/CD
+- Cloud infrastructure
+- Identity and authentication
+- Deployment automation
+- Security
+- Monitoring
 
-### Health Checks
+The goal is not simply to build another demo application, but to progressively develop a system that reflects how modern engineering teams build and operate cloud applications.
 
-The application uses `/health` for the liveness probe and `/ready` for the readiness probe. These allow Kubernetes to determine whether each application pod is healthy and ready to receive traffic.
+---
 
-### Resource Management
+## 🤝 Contributing
 
-Each pod defines CPU and memory requests and limits:
+Contributions, suggestions and improvements are welcome.
 
-```yaml
-resources:
-	requests:
-		cpu: "100m"
-		memory: "128Mi"
-	limits:
-		cpu: "500m"
-		memory: "256Mi"
-```
+For major changes, please open an issue first to discuss the proposed change.
 
-Monitoring and Autoscaling
---------------------------
+---
 
-Metrics Server provides CPU and memory utilization:
+## 📄 License
 
-```bash
-kubectl top pods
-kubectl top nodes
-```
-
-Example output:
-
-```text
-NAME                                  CPU     MEMORY
-kubernetes-lite-deploy-xxxxx          15m     106Mi
-kubernetes-lite-deploy-yyyyy          10m     113Mi
-```
-
-Prometheus and Grafana are also available for local application metrics. See [monitoring/README.md](monitoring/README.md) for setup instructions.
-
-### Horizontal Pod Autoscaler
-
-The HPA is configured with:
-
-- Minimum replicas: 2
-- Maximum replicas: 10
-- CPU target: 60%
-
-Check the HPA:
-
-```bash
-kubectl get hpa kubernetes-lite-deploy
-```
-
-### HPA Load Test
-
-Use a temporary BusyBox pod to generate HTTP traffic:
-
-```bash
-kubectl run load-generator \
-	--image=busybox:1.36 \
-	--restart=Never \
-	-- /bin/sh -c 'while true; do wget -q -O- http://kubernetes-lite-deploy >/dev/null; done'
-```
-
-Watch CPU utilization and replica changes:
-
-```bash
-kubectl get hpa kubernetes-lite-deploy --watch
-kubectl get deployment kubernetes-lite-deploy --watch
-```
-
-After testing, remove the load generator:
-
-```bash
-kubectl delete pod load-generator
-```
-
-This demonstrates automatic scale-up under load and scale-down after the load is removed.
-
-### Multi-Node Scheduling
-
-Check pod placement across available Kubernetes nodes:
-
-```bash
-kubectl get pods -o wide
-kubectl get nodes
-```
-
-When multiple worker nodes are available, this shows Kubernetes workload scheduling across nodes.
-
-Key Learning Outcomes
----------------------
-
-This project demonstrates practical experience with:
-
-- Docker containerization
-- Kubernetes Deployments
-- Pods and ReplicaSets
-- Kubernetes Services
-- ClusterIP networking
-- Health probes
-- Resource requests and limits
-- Metrics Server and `kubectl top`
-- Horizontal Pod Autoscaling
-- Multi-node scheduling
-- Kubernetes self-healing
-- Load testing
-- DevOps troubleshooting
-
-Future Improvements
--------------------
-
-Potential next steps include:
-
-- Kubernetes Ingress
-- TLS/HTTPS
-- NetworkPolicies
-- Security scanning
-- Helm packaging
-- Cloud deployment
-
-Author
-------
-
-**Ayo Oke**
-
-DevOps | Kubernetes | Docker | Linux | Azure
-
+This project is currently maintained as a personal development project.
